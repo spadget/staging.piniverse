@@ -200,7 +200,7 @@ function openMobileModal(board, item, square) {
     activeModalItem = item;
     activeModalBoard = board;
     activeModalSquare = square;
-    activeModalCompleted = square.classList.contains("completed");
+    activeModalCompleted = square.classList.contains(board === "pinnivity" ? "is-open" : "completed");
 
     renderMobileModal();
 
@@ -229,6 +229,26 @@ function renderMobileModal() {
     const card = document.getElementById("mobile-modal-card");
 
     card.innerHTML = "";
+    card.classList.remove("pinnivity-modal-card", "pinnivity-modal-double", "is-open");
+    card.removeAttribute("role");
+    card.removeAttribute("tabindex");
+    card.removeAttribute("aria-label");
+
+    if (activeModalBoard === "pinnivity") {
+        card.classList.remove("completed");
+        card.classList.add("pinnivity-modal-card");
+        card.classList.toggle("pinnivity-modal-double", activeModalSquare.classList.contains("pinnivity-door-double"));
+        card.classList.toggle("is-open", activeModalCompleted);
+        card.setAttribute("role", "button");
+        card.setAttribute("tabindex", "0");
+        card.setAttribute("aria-label", (activeModalCompleted ? "Close" : "Open") + " door " + activeModalItem.number);
+        ["--art-x", "--art-y", "--art-width"].forEach(name =>
+            card.style.setProperty(name, activeModalSquare.style.getPropertyValue(name))
+        );
+        card.appendChild(activeModalSquare.querySelector(".pinnivity-flip").cloneNode(true));
+        return;
+    }
+
     card.classList.toggle("completed", activeModalCompleted);
 
     if (activeModalCompleted) {
@@ -243,6 +263,14 @@ function renderMobileModal() {
 
 async function toggleMobileModalCompletion() {
     activeModalCompleted = !activeModalCompleted;
+
+    if (activeModalBoard === "pinnivity") {
+        setPinnivityDoorState(activeModalSquare, activeModalCompleted);
+        const card = document.getElementById("mobile-modal-card");
+        card.classList.toggle("is-open", activeModalCompleted);
+        card.setAttribute("aria-label", (activeModalCompleted ? "Close" : "Open") + " door " + activeModalItem.number);
+        return;
+    }
 
     activeModalSquare.classList.toggle("completed", activeModalCompleted);
 
@@ -349,3 +377,35 @@ document
         closeMobileModal();
     });
     
+
+// Pinnivity: use the same desktop / mobile interaction pattern as birthday bingo.
+function setPinnivityDoorState(door, open) {
+    door.classList.toggle("is-open", open);
+    door.setAttribute("aria-pressed", String(open));
+    door.setAttribute("aria-label", (open ? "Close" : "Open") + " door " + door.dataset.day);
+}
+
+const pinnivityGrid = document.getElementById("pinnivity-grid");
+if (pinnivityGrid && pinnivityGrid.dataset.interaction === "bingo") {
+    pinnivityGrid.addEventListener("click", event => {
+        const door = event.target.closest("button[data-day]");
+        if (!door) return;
+        if (window.matchMedia("(max-width: 700px)").matches) {
+            openMobileModal("pinnivity", { number: door.dataset.day }, door);
+        } else {
+            setPinnivityDoorState(door, !door.classList.contains("is-open"));
+        }
+    });
+    document.getElementById("mobile-modal-card").addEventListener("keydown", event => {
+        if (activeModalBoard === "pinnivity" && (event.key === "Enter" || event.key === " ")) {
+            event.preventDefault();
+            toggleMobileModalCompletion();
+        }
+    });
+    window.addEventListener("hashchange", () => {
+        if (activeModalBoard === "pinnivity") closeMobileModal();
+    });
+    window.matchMedia("(max-width: 700px)").addEventListener("change", () => {
+        if (activeModalBoard === "pinnivity") closeMobileModal();
+    });
+}
