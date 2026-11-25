@@ -32,7 +32,7 @@
 .site-brand h1{margin:0;padding:0;text-align:left;font-size:clamp(2rem,7vw,3.125rem)}
 .site-nav{display:block;width:auto;padding:0;margin:0;flex-shrink:0}
 .site-menu{position:relative}
-.site-menu>summary{list-style:none;cursor:pointer;background:var(--colour-h1-text);color:white;border-radius:4px;padding:12px 16px;min-height:44px;font-weight:700}
+.site-menu>summary,.page-back{cursor:pointer;background:var(--colour-h1-text);color:white;border-radius:4px;padding:12px 16px;min-height:44px;font-weight:700}
 .site-menu>summary::-webkit-details-marker{display:none}
 .menu-panel{position:absolute;right:0;top:calc(100% + 8px);width:min(290px,calc(100vw - 24px));max-height:70vh;overflow:auto;background:white;border:1px solid #dce0ff;border-radius:12px;padding:8px;box-shadow:0 8px 24px #252c5626;z-index:100}
 .menu-panel a,.menu-group>summary{display:block;padding:12px;min-height:44px;border-radius:6px;color:#333c91;text-decoration:none;cursor:pointer}
@@ -41,13 +41,13 @@
 .menu-group[open]>summary::before{content:"▾ "}
 .menu-group>a,.menu-group>.menu-group{margin-left:12px}
 .menu-panel a:hover,.menu-panel a[aria-current=page]{background:#eef0ff;font-weight:700}
-.site-header a:focus-visible,.site-header summary:focus-visible,.page-link:focus-visible{outline:3px solid #434ed1;outline-offset:2px}
+.site-header a:focus-visible,.site-header summary:focus-visible,.page-link:focus-visible,.page-back:focus-visible{outline:3px solid #434ed1;outline-offset:2px}
 .page-links{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px;margin:16px 0}
 .page-link{display:flex;flex-direction:column;gap:6px;padding:18px;background:#f3f4ff;border:1px solid #dce0ff;border-radius:12px;text-decoration:none;color:#333c91}
 .page-link:hover{background:#e8ebff}
 .page-link strong{font-size:1.2rem}
 .page-link span{color:#35354a}
-.page-back{display:inline-block;margin:12px;padding:8px;color:#333c91}
+.page-back{display:inline-flex;align-items:center;margin:12px;text-decoration:none;box-sizing:border-box}
 @media(max-width:700px){.site-header{width:100%;padding:16px 12px}.site-brand h1{width:auto}.site-nav{width:auto}}
 </style>
 </head>
