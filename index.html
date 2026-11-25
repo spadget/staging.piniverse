@@ -134,6 +134,11 @@
 .pinnivity-modal-card .pinnivity-emoji {font-size:clamp(4rem,22vw,8rem)}
 .pinnivity-reveal-text {font:700 clamp(.65rem,1.6vw,1.1rem) var(--font-body)}
 .pinnivity-modal-card .pinnivity-reveal-text {font-size:1.2rem}
+@media (max-width: 700px) {
+    #pinnivity-grid .pinnivity-reveal-text {display:none}
+    #pinnivity-grid .pinnivity-reveal {gap:0}
+    .pinnivity-modal-card .pinnivity-reveal-text {display:block}
+}
 @media(prefers-reduced-motion:reduce){.pinnivity-flip{transition:none}}
 
 #pinnivity-qa[hidden]{display:none}
