@@ -205,7 +205,25 @@ function openMobileModal(board, item, square) {
     renderMobileModal();
 
     document.getElementById("mobile-modal").classList.add("active");
+    positionMobileModal();
 }
+
+function positionMobileModal() {
+    const modal = document.getElementById("mobile-modal");
+    if (!modal.classList.contains("active") || !activeModalSquare) return;
+
+    const inner = modal.querySelector(".mobile-modal-inner");
+    const title = activeModalSquare.closest(".tab-content")?.querySelector("h2");
+    const viewport = modal.getBoundingClientRect();
+    const preferredTop = title ? title.getBoundingClientRect().bottom - viewport.top + 8 : 28;
+    const maxTop = Math.max(28, viewport.height - inner.getBoundingClientRect().height - 8);
+    const top = Math.max(28, Math.min(preferredTop, maxTop));
+    inner.style.setProperty("--modal-top", top + "px");
+}
+
+window.addEventListener("scroll", positionMobileModal, { passive: true });
+window.addEventListener("resize", positionMobileModal);
+window.visualViewport?.addEventListener("resize", positionMobileModal);
 
 function renderMobileModal() {
     const card = document.getElementById("mobile-modal-card");
