@@ -61,17 +61,20 @@
     padding:0;
     width:100%;
     aspect-ratio:1/1;
-    background:#f4fbf8 url("images/pinnivity-2026.webp") center / 100% 100% no-repeat;
+    background:#f4fbf8;
 }
 #pinnivity-grid .pinnivity-door {
-    cursor:default;
+    cursor:pointer;
+    appearance:none;
+    perspective:700px;
+    display:block;
+    border:0;
     aspect-ratio:auto;
     min-height:0;
     min-width:0;
     padding:0;
     background:transparent;
-    border:1px solid rgba(255,255,255,.62);
-    box-shadow:inset 0 0 0 1px rgba(34,30,48,.30);
+    box-shadow:none;
 }
 #pinnivity-grid .pinnivity-door-double{grid-column:span 2;align-self:stretch}
 .pinnivity-number {
@@ -88,6 +91,43 @@
     #pinnivity-grid {width:calc(100% - 16px);margin:8px auto 0}
     .pinnivity-number {font-size:clamp(1rem,5vw,1.6rem)}
 }
+
+#pinnivity-grid .pinnivity-door:focus-visible {
+    outline:3px solid #434ed1; outline-offset:-3px; z-index:2;
+}
+.pinnivity-flip {
+    position:absolute; inset:0;
+    transform-style:preserve-3d;
+    transition:transform .32s ease-in-out;
+}
+.pinnivity-door.is-open .pinnivity-flip {transform:rotateY(180deg)}
+.pinnivity-face {
+    position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    backface-visibility:hidden;
+    -webkit-backface-visibility:hidden;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.62), inset 0 0 0 2px rgba(34,30,48,.30);
+}
+.pinnivity-front {
+    background:#f4fbf8 url("images/pinnivity-2026.webp") no-repeat;
+    background-size:var(--art-width,500%) 500%;
+    background-position:var(--art-x) var(--art-y);
+}
+.pinnivity-reveal {
+    transform:rotateY(180deg);
+    background:#eef0ff;
+    color:#333c91;
+    font-size:clamp(1.2rem,5vw,2.6rem);
+}
+#pinnivity-surprise {
+    width:min(420px,calc(100% - 32px)); max-height:85dvh;
+    border:1px solid #dce0ff; border-radius:14px; padding:24px;
+    color:var(--colour-body-text); text-align:center;
+}
+#pinnivity-surprise::backdrop {background:rgba(24,24,39,.5)}
+#pinnivity-surprise h2 {color:#333c91;margin:0 0 16px}
+#pinnivity-surprise button {font:inherit;cursor:pointer;border:0;border-radius:6px;padding:12px 20px;min-height:44px;color:white;background:#495dc9}
+@media(prefers-reduced-motion:reduce){.pinnivity-flip{transition:none}}
 </style>
 </head>
 <body>
@@ -195,30 +235,30 @@
         <section id="pinnivity" class="tab-content" data-page="2026/pinnivity">
             <h2 tabindex="-1">Pinnivity 2026</h2>
             <div id="pinnivity-grid" class="bingo-grid pinnivity-grid" aria-label="Pinnivity advent calendar">
-                <div class="bingo-square pinnivity-door" data-day="7"><span class="pinnivity-number">7</span></div>
-                <div class="bingo-square pinnivity-door" data-day="19"><span class="pinnivity-number">19</span></div>
-                <div class="bingo-square pinnivity-door" data-day="3"><span class="pinnivity-number">3</span></div>
-                <div class="bingo-square pinnivity-door" data-day="14"><span class="pinnivity-number">14</span></div>
-                <div class="bingo-square pinnivity-door" data-day="22"><span class="pinnivity-number">22</span></div>
-                <div class="bingo-square pinnivity-door" data-day="11"><span class="pinnivity-number">11</span></div>
-                <div class="bingo-square pinnivity-door" data-day="1"><span class="pinnivity-number">1</span></div>
-                <div class="bingo-square pinnivity-door" data-day="17"><span class="pinnivity-number">17</span></div>
-                <div class="bingo-square pinnivity-door" data-day="8"><span class="pinnivity-number">8</span></div>
-                <div class="bingo-square pinnivity-door" data-day="5"><span class="pinnivity-number">5</span></div>
-                <div class="bingo-square pinnivity-door" data-day="20"><span class="pinnivity-number">20</span></div>
-                <div class="bingo-square pinnivity-door" data-day="13"><span class="pinnivity-number">13</span></div>
-                <div class="bingo-square pinnivity-door" data-day="23"><span class="pinnivity-number">23</span></div>
-                <div class="bingo-square pinnivity-door" data-day="4"><span class="pinnivity-number">4</span></div>
-                <div class="bingo-square pinnivity-door" data-day="16"><span class="pinnivity-number">16</span></div>
-                <div class="bingo-square pinnivity-door" data-day="2"><span class="pinnivity-number">2</span></div>
-                <div class="bingo-square pinnivity-door" data-day="10"><span class="pinnivity-number">10</span></div>
-                <div class="bingo-square pinnivity-door" data-day="6"><span class="pinnivity-number">6</span></div>
-                <div class="bingo-square pinnivity-door" data-day="21"><span class="pinnivity-number">21</span></div>
-                <div class="bingo-square pinnivity-door" data-day="12"><span class="pinnivity-number">12</span></div>
-                <div class="bingo-square pinnivity-door" data-day="15"><span class="pinnivity-number">15</span></div>
-                <div class="bingo-square pinnivity-door" data-day="9"><span class="pinnivity-number">9</span></div>
-                <div class="bingo-square pinnivity-door" data-day="18"><span class="pinnivity-number">18</span></div>
-                <div class="bingo-square pinnivity-door pinnivity-door-double" data-day="24"><span class="pinnivity-number">24</span></div>
+                <button type="button" class="bingo-square pinnivity-door" data-day="7" aria-label="Open door 7" aria-haspopup="dialog" style="--art-x:0%;--art-y:0%;--art-width:500%"><span class="pinnivity-flip" aria-hidden="true"><span class="pinnivity-face pinnivity-front"><span class="pinnivity-number">7</span></span><span class="pinnivity-face pinnivity-reveal">🎁</span></span></button>
+                <button type="button" class="bingo-square pinnivity-door" data-day="19" aria-label="Open door 19" aria-haspopup="dialog" style="--art-x:25%;--art-y:0%;--art-width:500%"><span class="pinnivity-flip" aria-hidden="true"><span class="pinnivity-face pinnivity-front"><span class="pinnivity-number">19</span></span><span class="pinnivity-face pinnivity-reveal">🎁</span></span></button>
+                <button type="button" class="bingo-square pinnivity-door" data-day="3" aria-label="Open door 3" aria-haspopup="dialog" style="--art-x:50%;--art-y:0%;--art-width:500%"><span class="pinnivity-flip" aria-hidden="true"><span class="pinnivity-face pinnivity-front"><span class="pinnivity-number">3</span></span><span class="pinnivity-face pinnivity-reveal">🎁</span></span></button>
+                <button type="button" class="bingo-square pinnivity-door" data-day="14" aria-label="Open door 14" aria-haspopup="dialog" style="--art-x:75%;--art-y:0%;--art-width:500%"><span class="pinnivity-flip" aria-hidden="true"><span class="pinnivity-face pinnivity-front"><span class="pinnivity-number">14</span></span><span class="pinnivity-face pinnivity-reveal">🎁</span></span></button>
+                <button type="button" class="bingo-square pinnivity-door" data-day="22" aria-label="Open door 22" aria-haspopup="dialog" style="--art-x:100%;--art-y:0%;--art-width:500%"><span class="pinnivity-flip" aria-hidden="true"><span class="pinnivity-face pinnivity-front"><span class="pinnivity-number">22</span></span><span class="pinnivity-face pinnivity-reveal">🎁</span></span></button>
+                <button type="button" class="bingo-square pinnivity-door" data-day="11" aria-label="Open door 11" aria-haspopup="dialog" style="--art-x:0%;--art-y:25%;--art-width:500%"><span class="pinnivity-flip" aria-hidden="true"><span class="pinnivity-face pinnivity-front"><span class="pinnivity-number">11</span></span><span class="pinnivity-face pinnivity-reveal">🎁</span></span></button>
+                <button type="button" class="bingo-square pinnivity-door" data-day="1" aria-label="Open door 1" aria-haspopup="dialog" style="--art-x:25%;--art-y:25%;--art-width:500%"><span class="pinnivity-flip" aria-hidden="true"><span class="pinnivity-face pinnivity-front"><span class="pinnivity-number">1</span></span><span class="pinnivity-face pinnivity-reveal">🎁</span></span></button>
+                <button type="button" class="bingo-square pinnivity-door" data-day="17" aria-label="Open door 17" aria-haspopup="dialog" style="--art-x:50%;--art-y:25%;--art-width:500%"><span class="pinnivity-flip" aria-hidden="true"><span class="pinnivity-face pinnivity-front"><span class="pinnivity-number">17</span></span><span class="pinnivity-face pinnivity-reveal">🎁</span></span></button>
+                <button type="button" class="bingo-square pinnivity-door" data-day="8" aria-label="Open door 8" aria-haspopup="dialog" style="--art-x:75%;--art-y:25%;--art-width:500%"><span class="pinnivity-flip" aria-hidden="true"><span class="pinnivity-face pinnivity-front"><span class="pinnivity-number">8</span></span><span class="pinnivity-face pinnivity-reveal">🎁</span></span></button>
+                <button type="button" class="bingo-square pinnivity-door" data-day="5" aria-label="Open door 5" aria-haspopup="dialog" style="--art-x:100%;--art-y:25%;--art-width:500%"><span class="pinnivity-flip" aria-hidden="true"><span class="pinnivity-face pinnivity-front"><span class="pinnivity-number">5</span></span><span class="pinnivity-face pinnivity-reveal">🎁</span></span></button>
+                <button type="button" class="bingo-square pinnivity-door" data-day="20" aria-label="Open door 20" aria-haspopup="dialog" style="--art-x:0%;--art-y:50%;--art-width:500%"><span class="pinnivity-flip" aria-hidden="true"><span class="pinnivity-face pinnivity-front"><span class="pinnivity-number">20</span></span><span class="pinnivity-face pinnivity-reveal">🎁</span></span></button>
+                <button type="button" class="bingo-square pinnivity-door" data-day="13" aria-label="Open door 13" aria-haspopup="dialog" style="--art-x:25%;--art-y:50%;--art-width:500%"><span class="pinnivity-flip" aria-hidden="true"><span class="pinnivity-face pinnivity-front"><span class="pinnivity-number">13</span></span><span class="pinnivity-face pinnivity-reveal">🎁</span></span></button>
+                <button type="button" class="bingo-square pinnivity-door" data-day="23" aria-label="Open door 23" aria-haspopup="dialog" style="--art-x:50%;--art-y:50%;--art-width:500%"><span class="pinnivity-flip" aria-hidden="true"><span class="pinnivity-face pinnivity-front"><span class="pinnivity-number">23</span></span><span class="pinnivity-face pinnivity-reveal">🎁</span></span></button>
+                <button type="button" class="bingo-square pinnivity-door" data-day="4" aria-label="Open door 4" aria-haspopup="dialog" style="--art-x:75%;--art-y:50%;--art-width:500%"><span class="pinnivity-flip" aria-hidden="true"><span class="pinnivity-face pinnivity-front"><span class="pinnivity-number">4</span></span><span class="pinnivity-face pinnivity-reveal">🎁</span></span></button>
+                <button type="button" class="bingo-square pinnivity-door" data-day="16" aria-label="Open door 16" aria-haspopup="dialog" style="--art-x:100%;--art-y:50%;--art-width:500%"><span class="pinnivity-flip" aria-hidden="true"><span class="pinnivity-face pinnivity-front"><span class="pinnivity-number">16</span></span><span class="pinnivity-face pinnivity-reveal">🎁</span></span></button>
+                <button type="button" class="bingo-square pinnivity-door" data-day="2" aria-label="Open door 2" aria-haspopup="dialog" style="--art-x:0%;--art-y:75%;--art-width:500%"><span class="pinnivity-flip" aria-hidden="true"><span class="pinnivity-face pinnivity-front"><span class="pinnivity-number">2</span></span><span class="pinnivity-face pinnivity-reveal">🎁</span></span></button>
+                <button type="button" class="bingo-square pinnivity-door" data-day="10" aria-label="Open door 10" aria-haspopup="dialog" style="--art-x:25%;--art-y:75%;--art-width:500%"><span class="pinnivity-flip" aria-hidden="true"><span class="pinnivity-face pinnivity-front"><span class="pinnivity-number">10</span></span><span class="pinnivity-face pinnivity-reveal">🎁</span></span></button>
+                <button type="button" class="bingo-square pinnivity-door" data-day="6" aria-label="Open door 6" aria-haspopup="dialog" style="--art-x:50%;--art-y:75%;--art-width:500%"><span class="pinnivity-flip" aria-hidden="true"><span class="pinnivity-face pinnivity-front"><span class="pinnivity-number">6</span></span><span class="pinnivity-face pinnivity-reveal">🎁</span></span></button>
+                <button type="button" class="bingo-square pinnivity-door" data-day="21" aria-label="Open door 21" aria-haspopup="dialog" style="--art-x:75%;--art-y:75%;--art-width:500%"><span class="pinnivity-flip" aria-hidden="true"><span class="pinnivity-face pinnivity-front"><span class="pinnivity-number">21</span></span><span class="pinnivity-face pinnivity-reveal">🎁</span></span></button>
+                <button type="button" class="bingo-square pinnivity-door" data-day="12" aria-label="Open door 12" aria-haspopup="dialog" style="--art-x:100%;--art-y:75%;--art-width:500%"><span class="pinnivity-flip" aria-hidden="true"><span class="pinnivity-face pinnivity-front"><span class="pinnivity-number">12</span></span><span class="pinnivity-face pinnivity-reveal">🎁</span></span></button>
+                <button type="button" class="bingo-square pinnivity-door" data-day="15" aria-label="Open door 15" aria-haspopup="dialog" style="--art-x:0%;--art-y:100%;--art-width:500%"><span class="pinnivity-flip" aria-hidden="true"><span class="pinnivity-face pinnivity-front"><span class="pinnivity-number">15</span></span><span class="pinnivity-face pinnivity-reveal">🎁</span></span></button>
+                <button type="button" class="bingo-square pinnivity-door" data-day="9" aria-label="Open door 9" aria-haspopup="dialog" style="--art-x:25%;--art-y:100%;--art-width:500%"><span class="pinnivity-flip" aria-hidden="true"><span class="pinnivity-face pinnivity-front"><span class="pinnivity-number">9</span></span><span class="pinnivity-face pinnivity-reveal">🎁</span></span></button>
+                <button type="button" class="bingo-square pinnivity-door" data-day="18" aria-label="Open door 18" aria-haspopup="dialog" style="--art-x:50%;--art-y:100%;--art-width:500%"><span class="pinnivity-flip" aria-hidden="true"><span class="pinnivity-face pinnivity-front"><span class="pinnivity-number">18</span></span><span class="pinnivity-face pinnivity-reveal">🎁</span></span></button>
+                <button type="button" class="bingo-square pinnivity-door pinnivity-door-double" data-day="24" aria-label="Open door 24" aria-haspopup="dialog" style="--art-x:100%;--art-y:100%;--art-width:250%"><span class="pinnivity-flip" aria-hidden="true"><span class="pinnivity-face pinnivity-front"><span class="pinnivity-number">24</span></span><span class="pinnivity-face pinnivity-reveal">🎁</span></span></button>
             </div>
             <a class="page-back" href="#2026">← 2026</a>
         </section>
@@ -229,6 +269,11 @@
             <div id="mobile-modal-card" class="mobile-modal-card"></div>
         </div>
     </div>
+    <dialog id="pinnivity-surprise" aria-labelledby="pinnivity-surprise-title">
+        <h2 id="pinnivity-surprise-title">Pinnivity</h2>
+        <p id="pinnivity-surprise-content">A little surprise will go here.</p>
+        <form method="dialog"><button type="submit">Close</button></form>
+    </dialog>
     <div id="toast" class="toast"></div>
     <script>
 (() => {
@@ -255,6 +300,42 @@
   showPage();
 })();
 </script>
+    <script>
+(() => {
+    // Staging preview: every door can be opened for testing.
+    const grid = document.getElementById('pinnivity-grid');
+    const dialog = document.getElementById('pinnivity-surprise');
+    const title = document.getElementById('pinnivity-surprise-title');
+    const content = document.getElementById('pinnivity-surprise-content');
+    let pending = false;
+    let selectedDoor = null;
+    function showSurprise(door) {
+        pending = false;
+        if (!door.closest('.tab-content').classList.contains('active') || dialog.open) return;
+        selectedDoor = door;
+        title.textContent = 'Door ' + door.dataset.day;
+        content.textContent = 'A little surprise will go here.';
+        dialog.showModal();
+    }
+    grid.addEventListener('click', event => {
+        const door = event.target.closest('button[data-day]');
+        if (!door || pending || dialog.open) return;
+        const firstOpen = !door.classList.contains('is-open');
+        door.classList.add('is-open');
+        door.setAttribute('aria-label', 'Revisit door ' + door.dataset.day);
+        if (firstOpen && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            pending = true;
+            window.setTimeout(() => showSurprise(door), 320);
+        } else {
+            showSurprise(door);
+        }
+    });
+    dialog.addEventListener('close', () => {
+        if (selectedDoor && selectedDoor.closest('.tab-content').classList.contains('active')) selectedDoor.focus({preventScroll:true});
+    });
+    window.addEventListener('hashchange', () => { if (dialog.open) dialog.close(); });
+})();
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="script.js?v=20261125-modal1"></script>
 
