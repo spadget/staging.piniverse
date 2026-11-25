@@ -53,10 +53,41 @@
 @media(max-width:700px){.site-header{width:100%;padding:16px 12px}.site-brand h1{width:auto}.site-nav{width:auto}}
 
 /* Pinnivity advent calendar: 25 grid spaces, 24 doors. */
-.pinnivity-door{cursor:default}
-.pinnivity-door-double{grid-column:span 2;aspect-ratio:auto;align-self:stretch}
-.pinnivity-number{font-family:var(--font-mobile-numbers);color:var(--colour-grid-square-number);font-size:clamp(1.6rem,4vw,3rem)}
-@media(max-width:700px){.pinnivity-number{font-size:1.6rem}}
+#pinnivity-grid {
+    display:grid;
+    grid-template-columns:repeat(5,minmax(0,1fr));
+    grid-template-rows:repeat(5,minmax(0,1fr));
+    gap:0;
+    padding:0;
+    width:100%;
+    aspect-ratio:1/1;
+    background:#f4fbf8 url("images/pinnivity-2026.webp") center / 100% 100% no-repeat;
+}
+#pinnivity-grid .pinnivity-door {
+    cursor:default;
+    aspect-ratio:auto;
+    min-height:0;
+    min-width:0;
+    padding:0;
+    background:transparent;
+    border:1px solid rgba(255,255,255,.62);
+    box-shadow:inset 0 0 0 1px rgba(34,30,48,.30);
+}
+#pinnivity-grid .pinnivity-door-double{grid-column:span 2;align-self:stretch}
+.pinnivity-number {
+    font-family:var(--font-mobile-numbers);
+    font-size:clamp(1.3rem,4vw,3rem);
+    line-height:1.2;
+    color:#fff;
+    background:rgba(24,24,39,.55);
+    padding:.08em .25em;
+    border-radius:6px;
+    text-shadow:0 1px 2px #161624;
+}
+@media(max-width:700px){
+    #pinnivity-grid {width:calc(100% - 16px);margin:8px auto 0}
+    .pinnivity-number {font-size:clamp(1rem,5vw,1.6rem)}
+}
 </style>
 </head>
 <body>
