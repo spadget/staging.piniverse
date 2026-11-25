@@ -25,22 +25,80 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Bitcount+Grid+Double:wght@100..900&family=Cabin+Sketch:wght@400;700&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Monoton&family=Permanent+Marker&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <style>
+/* Site navigation */
+.site-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 0;position:relative}
+.site-brand{text-decoration:none;min-width:0}
+.site-brand h1{margin:0;padding:0;text-align:left;font-size:clamp(2rem,7vw,3.125rem)}
+.site-nav{display:block;width:auto;padding:0;margin:0;flex-shrink:0}
+.site-menu{position:relative}
+.site-menu>summary{list-style:none;cursor:pointer;background:#485bc5;color:white;border-radius:10px;padding:12px 16px;min-height:44px;font-weight:700}
+.site-menu>summary::-webkit-details-marker{display:none}
+.menu-panel{position:absolute;right:0;top:calc(100% + 8px);width:min(290px,calc(100vw - 24px));max-height:70vh;overflow:auto;background:white;border:1px solid #dce0ff;border-radius:12px;padding:8px;box-shadow:0 8px 24px #252c5626;z-index:100}
+.menu-panel a,.menu-group>summary{display:block;padding:12px;min-height:44px;border-radius:6px;color:#333c91;text-decoration:none;cursor:pointer}
+.menu-group>summary{font-weight:700}
+.menu-group>summary::before{content:"▸ "}
+.menu-group[open]>summary::before{content:"▾ "}
+.menu-group>a,.menu-group>.menu-group{margin-left:12px}
+.menu-panel a:hover,.menu-panel a[aria-current=page]{background:#eef0ff;font-weight:700}
+.site-header a:focus-visible,.site-header summary:focus-visible,.page-link:focus-visible{outline:3px solid #434ed1;outline-offset:2px}
+.page-links{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px;margin:16px 0}
+.page-link{display:flex;flex-direction:column;gap:6px;padding:18px;background:#f3f4ff;border:1px solid #dce0ff;border-radius:12px;text-decoration:none;color:#333c91}
+.page-link:hover{background:#e8ebff}
+.page-link strong{font-size:1.2rem}
+.page-link span{color:#35354a}
+.page-back{display:inline-block;margin:12px;padding:8px;color:#333c91}
+@media(max-width:700px){.site-header{width:100%;padding:16px 12px}.site-brand h1{width:auto}.site-nav{width:auto}}
+</style>
 </head>
 <body>
 
-    <header>
-        <h1>Pin's Birthday Bingo</h1>
-    </header>
-
-    <nav>
-        <button class="tab-button active" data-tab="home">Home</button>
-        <button class="tab-button" data-tab="films">Film Bingo</button>
-        <button class="tab-button" data-tab="geocaching">Geocaching Bingo</button>
-    </nav>
+    <header class="site-header">
+  <a class="site-brand" href="#home"><h1>Piniverse</h1></a>
+  <nav class="site-nav" aria-label="Main navigation">
+    <details id="site-menu" class="site-menu">
+      <summary>☰ Menu</summary>
+      <div class="menu-panel">
+        <a href="#home">Home</a>
+        <details open class="menu-group"><summary>2026</summary>
+          <a href="#2026">2026 overview</a>
+          <details open class="menu-group"><summary>Birthday</summary>
+            <a href="#2026/birthday">Birthday home</a>
+            <a href="#2026/birthday/films">Film Bingo</a>
+            <a href="#2026/birthday/geocaching">Geocaching Bingo</a>
+          </details>
+          <a href="#2026/pinnivity">Pinnivity</a>
+        </details>
+      </div>
+    </details>
+  </nav>
+</header>
 
     <main>
-        <section id="home" class="tab-content active">
-            <h2>Welcome to Piniverse!</h2>
+        <section id="site-home" class="tab-content active" data-page="home">
+  <h2 tabindex="-1">Welcome to Piniverse!</h2>
+  <div class="home-content">
+    <p>Welcome to your very own little corner of the universe, Pin! 💕</p>
+    <p>This is a place for adventures, challenges, memories and the occasional surprise. Everything here is made especially for you.</p>
+    <p>Explore whenever you fancy, and come back any time to see what's new.</p>
+    <p>Love,<br>Pinbow 🌈</p>
+    <h3>Explore by year</h3>
+    <div class="page-links"><a class="page-link" href="#2026"><strong>2026</strong><span>Birthday adventures and Christmas surprises</span></a></div>
+  </div>
+</section>
+<section id="year-2026" class="tab-content" data-page="2026">
+  <h2 tabindex="-1">2026</h2>
+  <div class="home-content">
+    <p>Explore your adventures and surprises from 2026.</p>
+    <div class="page-links">
+      <a class="page-link" href="#2026/birthday"><strong>🎂 Birthday</strong><span>Film and geocaching challenges</span></a>
+      <a class="page-link" href="#2026/pinnivity"><strong>🎄 Pinnivity</strong><span>A little Christmas magic</span></a>
+    </div>
+  </div>
+  <a class="page-back" href="#home">← Home</a>
+</section>
+<section id="birthday" class="tab-content" data-page="2026/birthday">
+  <h2 tabindex="-1">Birthday Bingo 2026</h2>
             <div class="home-content">
                 <p>
                 Happy Birthday Pin! 🎉
@@ -54,10 +112,10 @@
                 There are two bingo boards to explore:
                 </p>
 
-                <ul>
-                    <li>🎬 Film Bingo</li>
-                    <li>📍 Geocaching Bingo</li>
-                </ul>
+                <div class="page-links">
+                    <a class="page-link" href="#2026/birthday/films"><strong>🎬 Film Bingo</strong><span>Explore your film challenges</span></a>
+                    <a class="page-link" href="#2026/birthday/geocaching"><strong>📍 Geocaching Bingo</strong><span>Explore your geocaching challenges</span></a>
+                </div>
 
                 <p>
                 On desktop, click a square to complete it.
@@ -81,16 +139,24 @@
                 Pinbow 💕
                 </p>
             </div>
+            <a class="page-back" href="#2026">← 2026</a>
         </section>
 
-        <section id="films" class="tab-content">
-            <h2>Film Bingo</h2>
+        <section id="films" class="tab-content" data-page="2026/birthday/films">
+            <h2 tabindex="-1">Film Bingo</h2>
             <div id="film-grid" class="bingo-grid"></div>
+            <a class="page-back" href="#2026/birthday">← Birthday home</a>
         </section>
 
-        <section id="geocaching" class="tab-content">
-            <h2>Geocaching Bingo</h2>
+        <section id="geocaching" class="tab-content" data-page="2026/birthday/geocaching">
+            <h2 tabindex="-1">Geocaching Bingo</h2>
             <div id="geocache-grid" class="bingo-grid"></div>
+            <a class="page-back" href="#2026/birthday">← Birthday home</a>
+        </section>
+        <section id="pinnivity" class="tab-content" data-page="2026/pinnivity">
+            <h2 tabindex="-1">Pinnivity 2026</h2>
+            <div class="home-content"><p>🎄 A little Christmas magic is coming on 1 December!</p></div>
+            <a class="page-back" href="#2026">← 2026</a>
         </section>
     </main>
     <div id="mobile-modal" class="mobile-modal">
@@ -100,6 +166,31 @@
         </div>
     </div>
     <div id="toast" class="toast"></div>
+    <script>
+(() => {
+  const pages = Array.from(document.querySelectorAll('[data-page]'));
+  const menu = document.getElementById('site-menu');
+  const aliases = {films:'2026/birthday/films', geocaching:'2026/birthday/geocaching', birthday:'2026/birthday', pinnivity:'2026/pinnivity'};
+  function showPage(moveFocus = false) {
+    const hash = location.hash.slice(1);
+    const path = aliases[hash] || hash || 'home';
+    const page = pages.find(p => p.dataset.page === path) || pages[0];
+    pages.forEach(p => p.classList.toggle('active', p === page));
+    document.querySelectorAll('.menu-panel a').forEach(a => {
+      if(a.hash.slice(1) === page.dataset.page) a.setAttribute('aria-current','page');
+      else a.removeAttribute('aria-current');
+    });
+    document.title = page.dataset.page === 'home' ? 'Welcome to Piniverse' : page.querySelector('h2').textContent + ' | Piniverse';
+    menu.open = false;
+    if(moveFocus) { page.querySelector('h2').focus({preventScroll:true}); window.scrollTo(0,0); }
+  }
+  menu.addEventListener('click', e => { if(e.target.closest('a')) menu.open = false; });
+  document.addEventListener('click', e => { if(menu.open && !menu.contains(e.target)) menu.open = false; });
+  document.addEventListener('keydown', e => { if(e.key === 'Escape' && menu.open){menu.open=false;menu.querySelector('summary').focus();} });
+  window.addEventListener('hashchange', () => showPage(true));
+  showPage();
+})();
+</script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="script.js"></script>
 
