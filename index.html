@@ -120,7 +120,13 @@
     font-size:clamp(1.2rem,5vw,2.6rem);
 }
 .pinnivity-modal-card {position:relative;perspective:700px;padding:0;overflow:visible}
-.pinnivity-modal-double {aspect-ratio:2/1}
+@media(max-width:700px){
+    .pinnivity-modal-double {aspect-ratio:1/1}
+    /* Keep the original double-width artwork undistorted on the closed face. */
+    .pinnivity-modal-double .pinnivity-front {
+        top:25%; bottom:25%;
+    }
+}
 .pinnivity-modal-card.is-open .pinnivity-flip {transform:rotateY(180deg)}
 .pinnivity-modal-card .pinnivity-number {font-size:clamp(2rem,9vw,4rem)}
 .pinnivity-reveal {flex-direction:column;gap:6px;padding:8px;text-align:center;overflow:hidden}
