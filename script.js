@@ -262,6 +262,12 @@ function renderMobileModal() {
 }
 
 async function toggleMobileModalCompletion() {
+    if (activeModalBoard === "pinnivity" && !isPinnivityDoorAvailable(activeModalSquare)) {
+        refreshPinnivityLocks();
+        closeMobileModal();
+        showToast(pinnivityLockedMessage(activeModalSquare));
+        return;
+    }
     activeModalCompleted = !activeModalCompleted;
 
     if (activeModalBoard === "pinnivity") {
@@ -386,10 +392,106 @@ function setPinnivityDoorState(door, open) {
 }
 
 const pinnivityGrid = document.getElementById("pinnivity-grid");
+const pinnivityQA = document.getElementById("pinnivity-qa");
+let pinnivityQAMode = "real";
+let pinnivityQADate = "";
+
+function pinnivityUKDate(now = new Date()) {
+    const parts = new Intl.DateTimeFormat("en-GB", {
+        timeZone: "Europe/London", year: "numeric", month: "2-digit", day: "2-digit"
+    }).formatToParts(now);
+    const part = type => parts.find(p => p.type === type).value;
+    return part("year") + "-" + part("month") + "-" + part("day");
+}
+
+function pinnivityUnlockedThrough(date) {
+    if (date < "2026-12-01") return 0;
+    if (date >= "2026-12-24") return 24;
+    return Number(date.slice(8,10));
+}
+
+function pinnivityEffectiveDate() {
+    return pinnivityQA?.dataset.enabled === "true" && pinnivityQAMode === "date"
+        ? pinnivityQADate : pinnivityUKDate();
+}
+
+function pinnivityAvailableDay() {
+    return pinnivityQA?.dataset.enabled === "true" && pinnivityQAMode === "all"
+        ? 24 : pinnivityUnlockedThrough(pinnivityEffectiveDate());
+}
+
+function isPinnivityDoorAvailable(door) {
+    return Number(door.dataset.day) <= pinnivityAvailableDay();
+}
+
+function pinnivityLockedMessage(door) {
+    return "Door " + door.dataset.day + " opens on " + door.dataset.day + " December 2026.";
+}
+
+function refreshPinnivityLocks() {
+    if (!pinnivityGrid) return;
+    const available = pinnivityAvailableDay();
+    pinnivityGrid.querySelectorAll("button[data-day]").forEach(door => {
+        const locked = Number(door.dataset.day) > available;
+        if (locked && door.classList.contains("is-open")) setPinnivityDoorState(door, false);
+        door.classList.toggle("is-locked", locked);
+        door.setAttribute("aria-disabled", String(locked));
+        if (locked) door.setAttribute("aria-label", pinnivityLockedMessage(door));
+        else door.setAttribute("aria-label", (door.classList.contains("is-open") ? "Close" : "Open") + " door " + door.dataset.day);
+    });
+    if (activeModalBoard === "pinnivity" && activeModalSquare &&
+        !isPinnivityDoorAvailable(activeModalSquare)) {
+        closeMobileModal();
+    }
+    const status = document.getElementById("pinnivity-qa-status");
+    if (status && pinnivityQA?.dataset.enabled === "true") {
+        const mode = pinnivityQAMode === "all" ? "All doors unlocked" :
+            (pinnivityQAMode === "date" ? "Simulated date: " : "Real UK date: ") + pinnivityEffectiveDate();
+        const next = mode + " | " + available + " of 24 doors available";
+        if (status.textContent !== next) status.textContent = next;
+    }
+}
+
+function setupPinnivityQA() {
+    if (!pinnivityQA || pinnivityQA.dataset.enabled !== "true") return;
+    pinnivityQA.hidden = false;
+    const date = document.getElementById("pinnivity-qa-date");
+    const mode = document.getElementById("pinnivity-qa-mode");
+    date.value = pinnivityUKDate();
+    mode.value = "real";
+    function apply() {
+        date.disabled = mode.value !== "date";
+        if (mode.value === "date" && (!date.value || !date.validity.valid)) return;
+        pinnivityQAMode = mode.value;
+        pinnivityQADate = date.value;
+        refreshPinnivityLocks();
+    }
+    mode.addEventListener("change", apply);
+    date.addEventListener("change", apply);
+    document.getElementById("pinnivity-qa-reset").addEventListener("click", () => {
+        mode.value = "real";
+        date.value = pinnivityUKDate();
+        apply();
+    });
+    apply();
+}
+
 if (pinnivityGrid && pinnivityGrid.dataset.interaction === "bingo") {
+    setupPinnivityQA();
+    refreshPinnivityLocks();
+    window.setInterval(refreshPinnivityLocks, 30000);
+    window.addEventListener("focus", refreshPinnivityLocks);
+    document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) refreshPinnivityLocks();
+    });
     pinnivityGrid.addEventListener("click", event => {
         const door = event.target.closest("button[data-day]");
         if (!door) return;
+        refreshPinnivityLocks();
+        if (!isPinnivityDoorAvailable(door)) {
+            showToast(pinnivityLockedMessage(door));
+            return;
+        }
         if (window.matchMedia("(max-width: 700px)").matches) {
             openMobileModal("pinnivity", { number: door.dataset.day }, door);
         } else {
