@@ -317,7 +317,8 @@ main {
     .mobile-modal-inner {
         position: relative;
         width: calc(100% - 16px);
-        margin-top: 314px;
+        max-width: calc(100dvh - 36px);
+        margin-top: var(--modal-top, 28px);
     }
 
     .mobile-modal-card {
@@ -334,7 +335,7 @@ main {
         font-family: var(--font-body);
         font-size: 1.2rem;
         position: relative;
-        overflow: hidden;
+        overflow: auto;
     }
 
     .mobile-modal-card img {
