@@ -5,7 +5,7 @@
     --font-mobile-numbers: "Monoton", cursive;
 
     --colour-background: #F4FBF8;
-    --colour-h1-text: #5c72ff;
+    --colour-h1-text: var(--colour-nav-tab-background);
     --colour-h2-text: #ffffff;
     --colour-active-tab-text: #ffffff;
     --colour-body-text: #000000;
@@ -136,7 +136,7 @@ main {
 .tab-content > h2 {
     background: var(--colour-nav-tab-background);
     color: var(--colour-h2-text);
-    border-radius: 18px 18px 0 0;
+    border-radius: 0;
     padding: 12px 12px 12px 24px;
     margin: 0;
 }
