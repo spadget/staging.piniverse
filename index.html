@@ -51,6 +51,12 @@
 .page-link span{color:#35354a}
 .page-back{display:inline-flex;align-items:center;margin:12px;text-decoration:none;box-sizing:border-box}
 @media(max-width:700px){.site-header{width:100%;padding:16px 12px}.site-brand h1{width:auto}.site-nav{width:auto}}
+
+/* Pinnivity advent calendar: 25 grid spaces, 24 doors. */
+.pinnivity-door{cursor:default}
+.pinnivity-door-double{grid-column:span 2;aspect-ratio:auto;align-self:stretch}
+.pinnivity-number{font-family:var(--font-mobile-numbers);color:var(--colour-grid-square-number);font-size:clamp(1.6rem,4vw,3rem)}
+@media(max-width:700px){.pinnivity-number{font-size:1.6rem}}
 </style>
 </head>
 <body>
@@ -157,7 +163,32 @@
         </section>
         <section id="pinnivity" class="tab-content" data-page="2026/pinnivity">
             <h2 tabindex="-1">Pinnivity 2026</h2>
-            <div class="home-content"><p>🎄 A little Christmas magic is coming on 1 December!</p></div>
+            <div id="pinnivity-grid" class="bingo-grid pinnivity-grid" aria-label="Pinnivity advent calendar">
+                <div class="bingo-square pinnivity-door" data-day="7"><span class="pinnivity-number">7</span></div>
+                <div class="bingo-square pinnivity-door" data-day="19"><span class="pinnivity-number">19</span></div>
+                <div class="bingo-square pinnivity-door" data-day="3"><span class="pinnivity-number">3</span></div>
+                <div class="bingo-square pinnivity-door" data-day="14"><span class="pinnivity-number">14</span></div>
+                <div class="bingo-square pinnivity-door" data-day="22"><span class="pinnivity-number">22</span></div>
+                <div class="bingo-square pinnivity-door" data-day="11"><span class="pinnivity-number">11</span></div>
+                <div class="bingo-square pinnivity-door" data-day="1"><span class="pinnivity-number">1</span></div>
+                <div class="bingo-square pinnivity-door" data-day="17"><span class="pinnivity-number">17</span></div>
+                <div class="bingo-square pinnivity-door" data-day="8"><span class="pinnivity-number">8</span></div>
+                <div class="bingo-square pinnivity-door" data-day="5"><span class="pinnivity-number">5</span></div>
+                <div class="bingo-square pinnivity-door" data-day="20"><span class="pinnivity-number">20</span></div>
+                <div class="bingo-square pinnivity-door" data-day="13"><span class="pinnivity-number">13</span></div>
+                <div class="bingo-square pinnivity-door" data-day="23"><span class="pinnivity-number">23</span></div>
+                <div class="bingo-square pinnivity-door" data-day="4"><span class="pinnivity-number">4</span></div>
+                <div class="bingo-square pinnivity-door" data-day="16"><span class="pinnivity-number">16</span></div>
+                <div class="bingo-square pinnivity-door" data-day="2"><span class="pinnivity-number">2</span></div>
+                <div class="bingo-square pinnivity-door" data-day="10"><span class="pinnivity-number">10</span></div>
+                <div class="bingo-square pinnivity-door" data-day="6"><span class="pinnivity-number">6</span></div>
+                <div class="bingo-square pinnivity-door" data-day="21"><span class="pinnivity-number">21</span></div>
+                <div class="bingo-square pinnivity-door" data-day="12"><span class="pinnivity-number">12</span></div>
+                <div class="bingo-square pinnivity-door" data-day="15"><span class="pinnivity-number">15</span></div>
+                <div class="bingo-square pinnivity-door" data-day="9"><span class="pinnivity-number">9</span></div>
+                <div class="bingo-square pinnivity-door" data-day="18"><span class="pinnivity-number">18</span></div>
+                <div class="bingo-square pinnivity-door pinnivity-door-double" data-day="24"><span class="pinnivity-number">24</span></div>
+            </div>
             <a class="page-back" href="#2026">← 2026</a>
         </section>
     </main>
