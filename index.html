@@ -133,6 +133,17 @@
 .pinnivity-reveal-text {font:700 clamp(.65rem,1.6vw,1.1rem) var(--font-body)}
 .pinnivity-modal-card .pinnivity-reveal-text {font-size:1.2rem}
 @media(prefers-reduced-motion:reduce){.pinnivity-flip{transition:none}}
+
+#pinnivity-qa[hidden]{display:none}
+#pinnivity-qa{margin:8px 8px 12px;padding:10px 12px;border:1px solid #dce0ff;border-radius:8px;background:white;font:inherit}
+#pinnivity-qa>summary{cursor:pointer;font-weight:700;color:#333c91;padding:6px 0}
+.pinnivity-qa-fields{display:grid;gap:8px;max-width:420px;padding:8px 0}
+.pinnivity-qa-fields label{font-weight:700}
+.pinnivity-qa-fields select,.pinnivity-qa-fields input,.pinnivity-qa-fields button{font:inherit;min-height:44px;padding:8px;border:1px solid #b8bde0;border-radius:6px;max-width:100%;width:100%;box-sizing:border-box}
+.pinnivity-qa-fields button{cursor:pointer;background:#eef0ff;color:#333c91}
+#pinnivity-qa-status{margin:0;font-size:.9rem}
+#pinnivity-grid .pinnivity-door.is-locked{cursor:not-allowed}
+#toast{z-index:1100}
 </style>
 </head>
 <body>
@@ -239,6 +250,21 @@
         </section>
         <section id="pinnivity" class="tab-content" data-page="2026/pinnivity">
             <h2 tabindex="-1">Pinnivity 2026</h2>
+            <details id="pinnivity-qa" data-enabled="true" hidden>
+                <summary>QA controls</summary>
+                <div class="pinnivity-qa-fields">
+                    <label for="pinnivity-qa-mode">Calendar mode</label>
+                    <select id="pinnivity-qa-mode">
+                        <option value="real">Real UK date</option>
+                        <option value="date">Simulate a date</option>
+                        <option value="all">Unlock all doors</option>
+                    </select>
+                    <label for="pinnivity-qa-date">Test date</label>
+                    <input id="pinnivity-qa-date" type="date" disabled>
+                    <button id="pinnivity-qa-reset" type="button">Reset to real date</button>
+                    <p id="pinnivity-qa-status" role="status"></p>
+                </div>
+            </details>
             <div id="pinnivity-grid" data-interaction="bingo" class="bingo-grid pinnivity-grid" aria-label="Pinnivity advent calendar">
                 <button type="button" class="bingo-square pinnivity-door" data-day="7" aria-label="Open door 7" aria-pressed="false" style="--art-x:0%;--art-y:0%;--art-width:500%"><span class="pinnivity-flip" aria-hidden="true"><span class="pinnivity-face pinnivity-front"><span class="pinnivity-number">7</span></span><span class="pinnivity-face pinnivity-reveal">🎁<span class="pinnivity-reveal-text">Surprise coming soon</span></span></span></button>
                 <button type="button" class="bingo-square pinnivity-door" data-day="19" aria-label="Open door 19" aria-pressed="false" style="--art-x:25%;--art-y:0%;--art-width:500%"><span class="pinnivity-flip" aria-hidden="true"><span class="pinnivity-face pinnivity-front"><span class="pinnivity-number">19</span></span><span class="pinnivity-face pinnivity-reveal">🎁<span class="pinnivity-reveal-text">Surprise coming soon</span></span></span></button>
@@ -301,7 +327,7 @@
 })();
 </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="script.js?v=20261125-pinnivity-toggle2"></script>
+    <script src="script.js?v=20261125-pinnivity-qa1"></script>
 
 </body>
 </html>
