@@ -151,6 +151,25 @@
 #pinnivity-qa-status{margin:0;font-size:.9rem}
 #pinnivity-grid .pinnivity-door.is-locked{cursor:not-allowed}
 #toast{z-index:1100}
+
+/* Door 3: an accessible, replayable Christmas cracker. */
+.pinnivity-reward-button {font:inherit;border:0;cursor:pointer}
+.pinnivity-cracker-dialog {width:min(92vw,420px);max-height:90vh;overflow:auto;padding:24px 20px;border:2px solid #d5b36b;border-radius:18px;background:#fffaf0;color:#303454;text-align:center;box-shadow:0 12px 48px #0004}
+.pinnivity-cracker-dialog::backdrop {background:#20263a99}
+.pinnivity-cracker-dialog h2 {font-family:var(--font-body);font-size:1.4rem;margin:0 0 12px}
+.pinnivity-cracker-close {position:absolute;right:8px;top:8px;width:36px;height:36px;border:0;border-radius:50%;background:#f0e6d2;font-size:1.4rem;cursor:pointer;color:#303454}
+.pinnivity-cracker-pull {display:block;width:100%;margin:12px auto;padding:12px 0 6px;background:none;border:0;cursor:pointer;color:inherit;font:700 1rem var(--font-body)}
+.pinnivity-cracker-pull svg {display:block;width:100%;height:auto;overflow:visible;margin-bottom:12px}
+.pinnivity-cracker-half {transition:transform .45s cubic-bezier(.2,.75,.35,1)}
+.pinnivity-cracker-pop {opacity:0;transition:opacity .15s}
+.pinnivity-cracker-dialog.is-pulled .cracker-left {transform:translate(-19px,-4px) rotate(-5deg);transform-origin:130px 55px}
+.pinnivity-cracker-dialog.is-pulled .cracker-right {transform:translate(19px,4px) rotate(5deg);transform-origin:170px 55px}
+.pinnivity-cracker-dialog.is-pulled .pinnivity-cracker-pop {opacity:1}
+.pinnivity-cracker-joke {background:white;border:1px dashed #c6a259;border-radius:8px;padding:14px;margin:12px auto 0;line-height:1.5}
+.pinnivity-cracker-joke p {margin:8px 0}
+.pinnivity-cracker-joke[hidden] {display:none}
+@media(prefers-reduced-motion:reduce){.pinnivity-cracker-half,.pinnivity-cracker-pop{transition:none}}
+
 </style>
 </head>
 <body>
@@ -307,6 +326,39 @@
             <div id="mobile-modal-card" class="mobile-modal-card"></div>
         </div>
     </div>
+
+    <dialog id="pinnivity-cracker" class="pinnivity-cracker-dialog" aria-labelledby="pinnivity-cracker-title">
+        <button type="button" class="pinnivity-cracker-close" aria-label="Close Christmas cracker">×</button>
+        <h2 id="pinnivity-cracker-title">Christmas cracker</h2>
+        <button type="button" class="pinnivity-cracker-pull">
+            <svg viewBox="0 0 300 110" aria-hidden="true">
+                <g class="pinnivity-cracker-half cracker-left">
+                    <path d="M16 25 L68 43 L80 43 L90 26 H150 V84 H90 L80 67 H68 L16 85 Z" fill="#a32342" stroke="#741b34" stroke-width="2"/>
+                    <path d="M16 25 L28 34 V76 L16 85 Z" fill="#e6b95f"/>
+                    <path d="M67 43 L80 43 V67 H67 Z" fill="#e6b95f"/>
+                    <path d="M92 27 H150 V35 H92 Z M92 75 H150 V83 H92 Z" fill="#e6b95f"/>
+                    <path d="M116 42 L120 51 L130 52 L122 58 L125 68 L116 62 L107 68 L110 58 L102 52 L112 51 Z" fill="#ffe2a0"/>
+                </g>
+                <g class="pinnivity-cracker-half cracker-right">
+                    <path d="M284 25 L232 43 L220 43 L210 26 H150 V84 H210 L220 67 H232 L284 85 Z" fill="#a32342" stroke="#741b34" stroke-width="2"/>
+                    <path d="M284 25 L272 34 V76 L284 85 Z" fill="#e6b95f"/>
+                    <path d="M233 43 H220 V67 H233 Z" fill="#e6b95f"/>
+                    <path d="M208 27 H150 V35 H208 Z M208 75 H150 V83 H208 Z" fill="#e6b95f"/>
+                    <path d="M184 42 L188 51 L198 52 L190 58 L193 68 L184 62 L175 68 L178 58 L170 52 L180 51 Z" fill="#ffe2a0"/>
+                </g>
+                <g class="pinnivity-cracker-pop" fill="none" stroke="#c18a30" stroke-width="3" stroke-linecap="round">
+                    <path d="M150 16 V5 M137 20 L129 11 M163 20 L171 11 M150 94 V105 M137 90 L129 99 M163 90 L171 99"/>
+                    <path d="M145 45 L154 49 L148 56 L155 62 L146 68" stroke="#e6b95f"/>
+                </g>
+            </svg>
+            <span id="pinnivity-cracker-pull-label">Tap to pull!</span>
+        </button>
+        <div class="pinnivity-cracker-joke" aria-live="polite" hidden>
+            <p><strong>Why are Christmas trees bad at sewing?</strong></p>
+            <p>They always drop their needles.</p>
+        </div>
+    </dialog>
+
     <div id="toast" class="toast"></div>
     <script>
 (() => {
