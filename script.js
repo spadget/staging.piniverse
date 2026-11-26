@@ -233,6 +233,7 @@ function renderMobileModal() {
     card.removeAttribute("role");
     card.removeAttribute("tabindex");
     card.removeAttribute("aria-label");
+    updatePinnivityModalReward();
 
     if (activeModalBoard === "pinnivity") {
         card.classList.remove("completed");
@@ -275,6 +276,8 @@ async function toggleMobileModalCompletion() {
         const card = document.getElementById("mobile-modal-card");
         card.classList.toggle("is-open", activeModalCompleted);
         card.setAttribute("aria-label", (activeModalCompleted ? "Close" : "Open") + " door " + activeModalItem.number);
+        updatePinnivityModalReward();
+        positionMobileModal();
         await savePinnivityProgress(activeModalSquare, activeModalCompleted);
         return;
     }
@@ -393,10 +396,68 @@ function setPinnivityDoorState(door, open) {
     door.classList.toggle("is-open", open);
     door.setAttribute("aria-pressed", String(open));
     door.setAttribute("aria-label", (open ? "Close" : "Open") + " door " + door.dataset.day);
+    const rewardLink = pinnivityGridRewardLinks.get(door.dataset.day);
+    if (rewardLink) rewardLink.style.display = open ? "inline-block" : "none";
 }
 
 const pinnivityGrid = document.getElementById("pinnivity-grid");
 const pinnivityQA = document.getElementById("pinnivity-qa");
+
+// Link-based surprises use independent anchors, never nested in door buttons.
+const pinnivityRewards = {
+    "6": {
+        text: "A whole film for you!",
+        label: "Watch the film on YouTube",
+        url: "https://youtu.be/D7h5ztD-qwI?is=q0y8Ty0P2XYNwn6F"
+    }
+};
+const pinnivityGridRewardLinks = new Map();
+let pinnivityModalRewardLink = null;
+
+function createPinnivityRewardLink() {
+    const link = document.createElement("a");
+    link.className = "page-back";
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.style.display = "none";
+    link.style.margin = "8px 0";
+    link.addEventListener("click", event => event.stopPropagation());
+    return link;
+}
+
+function setupPinnivityRewards() {
+    if (!pinnivityGrid) return;
+    const rewards = document.createElement("div");
+    rewards.style.padding = "0 8px";
+    pinnivityGrid.after(rewards);
+    for (const [day, reward] of Object.entries(pinnivityRewards)) {
+        const door = pinnivityGrid.querySelector('button[data-day="' + day + '"]');
+        if (!door) continue;
+        door.querySelector(".pinnivity-reveal-text").textContent = reward.text;
+        const link = createPinnivityRewardLink();
+        link.href = reward.url;
+        link.textContent = "Door " + day + ": " + reward.label + " ↗";
+        rewards.appendChild(link);
+        pinnivityGridRewardLinks.set(day, link);
+    }
+    pinnivityModalRewardLink = createPinnivityRewardLink();
+    pinnivityModalRewardLink.style.textAlign = "center";
+    document.getElementById("mobile-modal-card").after(pinnivityModalRewardLink);
+}
+
+function updatePinnivityModalReward() {
+    if (!pinnivityModalRewardLink) return;
+    const reward = activeModalBoard === "pinnivity" && activeModalCompleted
+        ? pinnivityRewards[activeModalSquare?.dataset.day] : null;
+    if (reward) {
+        pinnivityModalRewardLink.href = reward.url;
+        pinnivityModalRewardLink.textContent = reward.label + " ↗";
+        pinnivityModalRewardLink.style.display = "block";
+    } else {
+        pinnivityModalRewardLink.style.display = "none";
+        pinnivityModalRewardLink.removeAttribute("href");
+    }
+}
 let pinnivityQAMode = "real";
 let pinnivityQADate = "";
 
@@ -549,6 +610,7 @@ function setupPinnivityQA() {
 }
 
 if (pinnivityGrid && pinnivityGrid.dataset.interaction === "bingo") {
+    setupPinnivityRewards();
     setupPinnivityQA();
     refreshPinnivityLocks();
     window.setInterval(refreshPinnivityLocks, 30000);
