@@ -398,6 +398,10 @@ function setPinnivityDoorState(door, open) {
     door.setAttribute("aria-label", (open ? "Close" : "Open") + " door " + door.dataset.day);
     const rewardLink = pinnivityGridRewardLinks.get(door.dataset.day);
     if (rewardLink) rewardLink.style.display = open ? "inline-block" : "none";
+    if (!open && door.dataset.day === "3") {
+        const dialog = document.getElementById("pinnivity-cracker");
+        if (dialog?.open) dialog.close();
+    }
 }
 
 const pinnivityGrid = document.getElementById("pinnivity-grid");
@@ -405,6 +409,11 @@ const pinnivityQA = document.getElementById("pinnivity-qa");
 
 // Link-based surprises use independent anchors, never nested in door buttons.
 const pinnivityRewards = {
+    "3": {
+        text: "A Christmas cracker!",
+        label: "Pull your Christmas cracker",
+        action: "cracker"
+    },
     "6": {
         text: "A whole film for you!",
         label: "Watch the film on YouTube",
@@ -413,6 +422,43 @@ const pinnivityRewards = {
 };
 const pinnivityGridRewardLinks = new Map();
 let pinnivityModalRewardLink = null;
+let pinnivityModalRewardButton = null;
+
+function openPinnivityCracker() {
+    const door = pinnivityGrid?.querySelector('button[data-day="3"]');
+    if (!door || !isPinnivityDoorAvailable(door) || !door.classList.contains("is-open")) return;
+    const dialog = document.getElementById("pinnivity-cracker");
+    if (!dialog || dialog.open) return;
+    dialog.classList.remove("is-pulled");
+    dialog.querySelector(".pinnivity-cracker-joke").hidden = true;
+    dialog.querySelector("#pinnivity-cracker-pull-label").textContent = "Tap to pull!";
+    dialog.showModal();
+}
+
+function createPinnivityRewardButton() {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "page-back pinnivity-reward-button";
+    button.style.display = "none";
+    button.style.margin = "8px 0";
+    button.addEventListener("click", event => {
+        event.stopPropagation();
+        openPinnivityCracker();
+    });
+    return button;
+}
+
+function setupPinnivityCracker() {
+    const dialog = document.getElementById("pinnivity-cracker");
+    if (!dialog) return;
+    dialog.querySelector(".pinnivity-cracker-close").addEventListener("click", () => dialog.close());
+    dialog.querySelector(".pinnivity-cracker-pull").addEventListener("click", () => {
+        const pulled = dialog.classList.toggle("is-pulled");
+        dialog.querySelector(".pinnivity-cracker-joke").hidden = !pulled;
+        dialog.querySelector("#pinnivity-cracker-pull-label").textContent = pulled ? "Pull again" : "Tap to pull!";
+    });
+    window.addEventListener("hashchange", () => { if (dialog.open) dialog.close(); });
+}
 
 function createPinnivityRewardLink() {
     const link = document.createElement("a");
@@ -434,22 +480,28 @@ function setupPinnivityRewards() {
         const door = pinnivityGrid.querySelector('button[data-day="' + day + '"]');
         if (!door) continue;
         door.querySelector(".pinnivity-reveal-text").textContent = reward.text;
-        const link = createPinnivityRewardLink();
-        link.href = reward.url;
-        link.textContent = "Door " + day + ": " + reward.label + " ↗";
+        const link = reward.action === "cracker" ? createPinnivityRewardButton() : createPinnivityRewardLink();
+        if (reward.url) link.href = reward.url;
+        link.textContent = "Door " + day + ": " + reward.label + (reward.url ? " ↗" : "");
         rewards.appendChild(link);
         pinnivityGridRewardLinks.set(day, link);
     }
     pinnivityModalRewardLink = createPinnivityRewardLink();
     pinnivityModalRewardLink.style.textAlign = "center";
-    document.getElementById("mobile-modal-card").after(pinnivityModalRewardLink);
+    pinnivityModalRewardButton = createPinnivityRewardButton();
+    document.getElementById("mobile-modal-card").after(pinnivityModalRewardLink, pinnivityModalRewardButton);
+    setupPinnivityCracker();
 }
 
 function updatePinnivityModalReward() {
     if (!pinnivityModalRewardLink) return;
     const reward = activeModalBoard === "pinnivity" && activeModalCompleted
         ? pinnivityRewards[activeModalSquare?.dataset.day] : null;
-    if (reward) {
+    if (pinnivityModalRewardButton) {
+        pinnivityModalRewardButton.style.display = reward?.action === "cracker" ? "block" : "none";
+        pinnivityModalRewardButton.textContent = reward?.action === "cracker" ? reward.label : "";
+    }
+    if (reward?.url) {
         pinnivityModalRewardLink.href = reward.url;
         pinnivityModalRewardLink.textContent = reward.label + " ↗";
         pinnivityModalRewardLink.style.display = "block";
