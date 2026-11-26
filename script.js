@@ -275,6 +275,7 @@ async function toggleMobileModalCompletion() {
         const card = document.getElementById("mobile-modal-card");
         card.classList.toggle("is-open", activeModalCompleted);
         card.setAttribute("aria-label", (activeModalCompleted ? "Close" : "Open") + " door " + activeModalItem.number);
+        await savePinnivityProgress(activeModalSquare, activeModalCompleted);
         return;
     }
 
@@ -353,10 +354,13 @@ document.getElementById("mobile-modal-card").addEventListener("click", event => 
 document.getElementById("mobile-modal").addEventListener("click", closeMobileModal);
 
 async function initialisePage() {
-    const savedProgress = await loadProgress();
+    let savedProgress = [];
+    try { savedProgress = (await loadProgress()) || []; }
+    catch (error) { console.error("Could not load progress:", error); }
 
     createGrid("film-grid", "films", filmItems, savedProgress);
     createGrid("geocache-grid", "geocaching", geocacheItems, savedProgress);
+    restorePinnivityProgress(savedProgress);
 }
 
 initialisePage();
@@ -396,6 +400,62 @@ const pinnivityQA = document.getElementById("pinnivity-qa");
 let pinnivityQAMode = "real";
 let pinnivityQADate = "";
 
+// Real progress uses the same database and upsert as Birthday Bingo.
+// A separate year-specific board prevents collisions with other activities.
+const PINNIVITY_BOARD = "pinnivity-2026";
+const PINNIVITY_QA_STATE = "piniverse:pinnivity:2026:qa-progress";
+const PINNIVITY_QA_SETTINGS = "piniverse:pinnivity:2026:qa-settings";
+const pinnivityRealProgress = new Map();
+const pinnivityTestProgress = new Map();
+const pinnivityPendingSaves = new Map();
+let pinnivityProgressReady = false;
+
+function readPinnivityStorage(storage, key, fallback) {
+    try { return JSON.parse(window[storage].getItem(key)) ?? fallback; }
+    catch { return fallback; }
+}
+
+function writePinnivityStorage(storage, key, value) {
+    try { window[storage].setItem(key, JSON.stringify(value)); }
+    catch { showToast("Test progress could not be saved in this browser."); }
+}
+
+function isPinnivityTestMode() {
+    return pinnivityQA?.dataset.enabled === "true" && pinnivityQAMode !== "real";
+}
+
+function pinnivityProgressMap() {
+    return isPinnivityTestMode() ? pinnivityTestProgress : pinnivityRealProgress;
+}
+
+function restorePinnivityProgress(savedProgress) {
+    pinnivityRealProgress.clear();
+    for (const entry of savedProgress || []) {
+        if (entry.board === PINNIVITY_BOARD && /^door-(?:[1-9]|1[0-9]|2[0-4])$/.test(entry.item)) {
+            pinnivityRealProgress.set(entry.item.slice(5), entry.completed === true);
+        }
+    }
+    pinnivityProgressReady = true;
+    refreshPinnivityLocks();
+}
+
+function savePinnivityProgress(door, open) {
+    const day = door.dataset.day;
+    pinnivityProgressMap().set(day, open);
+    if (isPinnivityTestMode()) {
+        writePinnivityStorage("localStorage", PINNIVITY_QA_STATE, Object.fromEntries(pinnivityTestProgress));
+        return Promise.resolve();
+    }
+    // Serialise writes for each door so rapid open/close taps save in order.
+    const previous = pinnivityPendingSaves.get(day) || Promise.resolve();
+    const next = previous.catch(() => {}).then(() => saveProgress(PINNIVITY_BOARD, "door-" + day, open));
+    pinnivityPendingSaves.set(day, next);
+    next.finally(() => {
+        if (pinnivityPendingSaves.get(day) === next) pinnivityPendingSaves.delete(day);
+    });
+    return next;
+}
+
 function pinnivityUKDate(now = new Date()) {
     const parts = new Intl.DateTimeFormat("en-GB", {
         timeZone: "Europe/London", year: "numeric", month: "2-digit", day: "2-digit"
@@ -433,7 +493,8 @@ function refreshPinnivityLocks() {
     const available = pinnivityAvailableDay();
     pinnivityGrid.querySelectorAll("button[data-day]").forEach(door => {
         const locked = Number(door.dataset.day) > available;
-        if (locked && door.classList.contains("is-open")) setPinnivityDoorState(door, false);
+        const open = !locked && pinnivityProgressMap().get(door.dataset.day) === true;
+        setPinnivityDoorState(door, open);
         door.classList.toggle("is-locked", locked);
         door.setAttribute("aria-disabled", String(locked));
         if (locked) door.setAttribute("aria-label", pinnivityLockedMessage(door));
@@ -457,13 +518,24 @@ function setupPinnivityQA() {
     pinnivityQA.hidden = false;
     const date = document.getElementById("pinnivity-qa-date");
     const mode = document.getElementById("pinnivity-qa-mode");
-    date.value = pinnivityUKDate();
-    mode.value = "real";
+    const settings = readPinnivityStorage("sessionStorage", PINNIVITY_QA_SETTINGS, {});
+    const savedTestProgress = readPinnivityStorage("localStorage", PINNIVITY_QA_STATE, {});
+    for (const [day, open] of Object.entries(savedTestProgress || {})) {
+        if (/^(?:[1-9]|1[0-9]|2[0-4])$/.test(day)) pinnivityTestProgress.set(day, open === true);
+    }
+    date.value = typeof settings?.date === "string" ? settings.date : pinnivityUKDate();
+    mode.value = ["real", "date", "all"].includes(settings?.mode) ? settings.mode : "real";
+    if (!date.value || !date.validity.valid) {
+        date.value = pinnivityUKDate();
+        mode.value = "real";
+    }
     function apply() {
         date.disabled = mode.value !== "date";
         if (mode.value === "date" && (!date.value || !date.validity.valid)) return;
         pinnivityQAMode = mode.value;
         pinnivityQADate = date.value;
+        writePinnivityStorage("sessionStorage", PINNIVITY_QA_SETTINGS, { mode: pinnivityQAMode, date: pinnivityQADate });
+        if (activeModalBoard === "pinnivity") closeMobileModal();
         refreshPinnivityLocks();
     }
     mode.addEventListener("change", apply);
@@ -484,7 +556,7 @@ if (pinnivityGrid && pinnivityGrid.dataset.interaction === "bingo") {
     document.addEventListener("visibilitychange", () => {
         if (!document.hidden) refreshPinnivityLocks();
     });
-    pinnivityGrid.addEventListener("click", event => {
+    pinnivityGrid.addEventListener("click", async event => {
         const door = event.target.closest("button[data-day]");
         if (!door) return;
         refreshPinnivityLocks();
@@ -492,10 +564,16 @@ if (pinnivityGrid && pinnivityGrid.dataset.interaction === "bingo") {
             showToast(pinnivityLockedMessage(door));
             return;
         }
+        if (!isPinnivityTestMode() && !pinnivityProgressReady) {
+            showToast("Loading your advent calendar. Try again in a moment.");
+            return;
+        }
         if (window.matchMedia("(max-width: 700px)").matches) {
             openMobileModal("pinnivity", { number: door.dataset.day }, door);
         } else {
-            setPinnivityDoorState(door, !door.classList.contains("is-open"));
+            const open = !door.classList.contains("is-open");
+            setPinnivityDoorState(door, open);
+            await savePinnivityProgress(door, open);
         }
     });
     document.getElementById("mobile-modal-card").addEventListener("keydown", event => {
